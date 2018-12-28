@@ -1,4 +1,4 @@
-#избавиться от перезаписи
+
 #import библиотек
 import argparse
 import os
