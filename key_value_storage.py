@@ -1,37 +1,55 @@
+"""
+You can cd to the directory of that file and use python3
+ key_value.storage.py --key {key} 
+ to read all values from the key 
+ or python3 key_value storage.py --key {key} --val {val} to write value to the key
+ in your command line
+ """
 
-#import библиотек
 import argparse
 import os
 from tempfile import gettempdir
-storage_path=os.path.join(gettempdir(), 'storage.data')
-a=dict()
-c=set()
-if not os.path.exists(storage_path):
-	with open(storage_path, 'w') as f:
-		pass
-with open(storage_path, 'r+') as f:
-	#словарь
-	for line in f:
-		key, value=line.split()
-		if key in c:
-			a[str(key)]+=', ' + value
-		else:
-			a[str(key)]=value
-		c.add(key)
-	#функция отвечает за вывод
-	def print_values(key):
-		global a
-		if key in a.keys():
-			print(a[str(key)])
-		else:
-			print(None)
-	parser = 														argparse.ArgumentParser(description='key-value storage')
+STORAGE_PATH = os.path.join(gettempdir(), 'storage.data')
 
-	parser.add_argument('--key', action="store", dest="keys")
-	parser.add_argument('--val', action="store", dest="values")
+
+def storage_init(STORAGE_PATH):
+	""" Function that creates key-val storage from the file """
+	storage = dict()
+	parsed_keys=set()
+	if not os.path.exists(STORAGE_PATH):
+		with open(STORAGE_PATH, 'w') as f:
+			pass
+	with open(STORAGE_PATH, 'r+') as f:
+		for line in f:
+			key, value = line.split()
+			if key in parsed_keys:
+				storage[str(key)] += ', ' + value
+			else:
+				storage[str(key)] = value
+			parsed_keys.add(str(key))
+	return storage
+		
+		
+def print_values(key:str,storage:dict):
+	""" Function that print value(s) from requested key """
+	if key in storage.keys():
+		return storage[str(key)]
+			
+			
+def parse_arguments(storage:dict):
+	""" Function that parse arguments from the command line """
+	parser = 														argparse.ArgumentParser(description='key_value_storage')
+
+	parser.add_argument('--key', action = "store", dest="keys")
+	parser.add_argument('--val', action = "store", dest="values")
 	args = parser.parse_args()
-	args=vars(args)
-	if args['values']==None:
-		print_values(args['keys'])
+	args = vars(args)
+	if args['values'] is None:
+		print(print_values(args['keys'], storage))
 	else:
-		f.write(args['keys']+' '+args['values']+'\n')
+		with open(STORAGE_PATH, 'a') as f:
+			f.write(args['keys']+' '+args['values']+'\n')
+	return None
+if __name__ == '__main__':
+	storage = storage_init(STORAGE_PATH)
+	parse_arguments(storage)
