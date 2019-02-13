@@ -49,7 +49,7 @@ def parse_arguments(storage:dict):
 	else:
 		with open(STORAGE_PATH, 'a') as f:
 			f.write(args['keys']+' '+args['values']+'\n')
-	return None
+	return
 if __name__ == '__main__':
 	storage = storage_init(STORAGE_PATH)
 	parse_arguments(storage)
